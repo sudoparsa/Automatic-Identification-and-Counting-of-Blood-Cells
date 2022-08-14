@@ -106,7 +106,7 @@ def blood_cell_count(file_name):
         cv2.destroyAllWindows()
 
 
-image_name = '../samples/3.tif'
+image_name = 'samples/3.tif'
 blood_cell_count(image_name)
 
 print('All Done!')
