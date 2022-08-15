@@ -3,6 +3,7 @@ import time
 from utils import iou
 from scipy import spatial
 from darkflow.net.build import TFNet
+import sys
 
 options = {'model': 'cfg/tiny-yolo-voc-3c.cfg',
            'load': 3750,
@@ -32,7 +33,7 @@ def blood_cell_count(file_name):
     iou_value = 0
 
     tic = time.time()
-    image = cv2.imread(image_name, -1)
+    image = cv2.imread(file_name, -1)
     output = tfnet.return_predict(image)
 
     for prediction in output:
@@ -99,14 +100,14 @@ def blood_cell_count(file_name):
     avg_time = (toc - tic) * 1000
     print('{0:.5}'.format(avg_time), 'ms')
 
-    cv2.imwrite('output/3.tif', image)
-    cv2.imshow('Total RBC: ' + str(rbc) + ', WBC: ' + str(wbc) + ', Platelets: ' + str(platelets), image)
-    print('Press "ESC" to close . . .')
-    if cv2.waitKey(0) & 0xff == 27:
-        cv2.destroyAllWindows()
+    cv2.imwrite('out.jpg', image)
 
 
-image_name = 'samples/3.tif'
-blood_cell_count(image_name)
+if len(sys.argv > 1):
+    image_path = sys.argv[1]
+else:
+    image_path = 'data/image_001.jpg'
+
+blood_cell_count(image_path)
 
 print('All Done!')
