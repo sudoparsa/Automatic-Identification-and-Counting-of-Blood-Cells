@@ -102,8 +102,7 @@ def blood_cell_count(file_name):
 
     cv2.imwrite('out.jpg', image)
 
-
-if len(sys.argv > 1):
+if len(sys.argv) > 1:
     image_path = sys.argv[1]
 else:
     image_path = 'data/image_001.jpg'
