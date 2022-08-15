@@ -21,7 +21,7 @@ if len(sys.argv) > 1:
 else:
     im_name = 'data/HRI001.jpg'
 
-image = cv2.imread(im_name)
+image = cv2.imread(im_name, -1)
 width, height = Image.open(im_name).size
 for h in range(0, 2592, 480):
     for w in range(0, 3872, 640):
