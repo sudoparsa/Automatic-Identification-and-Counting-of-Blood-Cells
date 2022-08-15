@@ -23,8 +23,8 @@ else:
 
 image = cv2.imread(im_name, -1)
 width, height = Image.open(im_name).size
-for h in range(0, 2592, 480):
-    for w in range(0, 3872, 640):
+for h in range(0, height, 480):
+    for w in range(0, width, 640):
         im = image[h:h + 480, w:w + 640]
         output = tfnet.return_predict(im)
 
