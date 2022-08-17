@@ -14,6 +14,7 @@ tfnet = TFNet(options)
 C = []  # Center
 R = []  # Radius
 L = []  # Label
+conf = []
 
 
 if len(sys.argv) > 1:
@@ -48,6 +49,7 @@ for h in range(0, height, 480):
             C.append(center)
             R.append(radius)
             L.append(label)
+            conf.append(confidence)
 
 record = []
 
@@ -55,6 +57,7 @@ for i in range(0, len(C)):
     center = C[i]
     radius = R[i]
     label = L[i]
+    confidence = conf[i]
 
     if label == 'RBC':
         color = (255, 0, 0)
@@ -65,6 +68,6 @@ for i in range(0, len(C)):
 
     image = cv2.circle(image, center, radius, color, 5)
     font = cv2.FONT_HERSHEY_COMPLEX
-    image = cv2.putText(image, label, (center[0] - 30, center[1] + 10), font, 1, color, 2)
+    image = cv2.putText(image, str(confidence), (center[0] - 30, center[1] + 10), font, 1, color, 2)
 
 cv2.imwrite('outh.jpg', image)
