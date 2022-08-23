@@ -26,7 +26,7 @@ def predict(im_name, out_name='outh.jpg', alpha=5):
 
     img = Image.open(im_name)
     width, height = int(img.size[0] * alpha), int(img.size[1] * alpha)
-    img = img.resize(width, height)
+    img = img.resize((width, height))
     temp = 'temp.jpg'
     img.save(temp)
 
