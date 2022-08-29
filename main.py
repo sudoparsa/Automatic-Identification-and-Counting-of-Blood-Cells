@@ -1,8 +1,10 @@
+from turtle import rt
 import cv2
 from darkflow.net.build import TFNet
 import sys
 from PIL import Image
 from tqdm import tqdm
+import numpy as np
 
 
 options = {'model': 'cfg/tiny-yolo-voc-3c.cfg',
@@ -18,12 +20,7 @@ if len(sys.argv) > 1:
 else:
     im_name = 'data/HRI001.jpg'
 
-def predict(im_name, out_name='outh.jpg', alpha=5):
-    C = []  # Center
-    R = []  # Radius
-    L = []  # Label
-    conf = []
-
+def open_image(im_name, alpha):
     img = Image.open(im_name)
     width, height = int(img.size[0] * alpha), int(img.size[1] * alpha)
     img = img.resize((width, height))
@@ -31,6 +28,36 @@ def predict(im_name, out_name='outh.jpg', alpha=5):
     img.save(temp)
 
     image = cv2.imread(temp, -1)
+    return image
+
+def draw_circles(image, alpha, C, R, L, conf, out_name='outh.jpg'):
+    image = open_image(im_name, alpha)
+    for i in range(0, len(C)):
+        center = C[i]
+        radius = R[i]
+        label = L[i]
+        confidence = conf[i]
+
+        if label == 'RBC':
+            color = (255, 0, 0)
+        elif label == 'WBC':
+            color = (0, 255, 0)
+        elif label == 'Platelets':
+            color = (0, 0, 255)
+
+        image = cv2.circle(image, center, radius, color, 5)
+        font = cv2.FONT_HERSHEY_COMPLEX
+        image = cv2.putText(image, str(confidence), (center[0] - 30, center[1] + 10), font, 1, color, 2)
+
+    cv2.imwrite(out_name, image)
+
+def predict(im_name, alpha=5):
+    C = []  # Center
+    R = []  # Radius
+    L = []  # Label
+    conf = []
+
+    image = open_image(im_name, alpha)
     for h in range(0, height, 480):
         for w in range(0, width, 640):
             im = image[h:h + 480, w:w + 640]
@@ -57,29 +84,25 @@ def predict(im_name, out_name='outh.jpg', alpha=5):
                 R.append(radius)
                 L.append(label)
                 conf.append(confidence)
+    return C, R, L, conf
 
-    record = []
+def merge(C_list, R_list, L_list, conf_list):
+    C, R, L, conf = np.concatenate(C_list).flat, np.concatenate(R_list).flat, np.concatenate(L_list).flat, np.concatenate(conf_list).flat
 
-    for i in range(0, len(C)):
-        center = C[i]
-        radius = R[i]
-        label = L[i]
-        confidence = conf[i]
+    return C, R, L, conf
 
-        if label == 'RBC':
-            color = (255, 0, 0)
-        elif label == 'WBC':
-            color = (0, 255, 0)
-        elif label == 'Platelets':
-            color = (0, 0, 255)
-
-        image = cv2.circle(image, center, radius, color, 5)
-        font = cv2.FONT_HERSHEY_COMPLEX
-        image = cv2.putText(image, str(confidence), (center[0] - 30, center[1] + 10), font, 1, color, 2)
-
-    cv2.imwrite(out_name, image)
+def main(im_name, alpha_list = [4.75, 5, 5.25, 5.5]):
+    C_list, R_list, L_list, conf_list = [], [], [], []
+    base = alpha_list[0]
+    for alpha in tqdm(alpha_list):
+        C, R, L, conf = predict(im_name, alpha=alpha)
+        z = base / alpha
+        C_list.append(np.array(C) * z)
+        R_list.append(np.array(R) * z)
+        L_list.append(L)
+        conf_list.append(conf)
+    C, R, L, conf = merge(C_list, R_list, L_list, conf_list)
+    draw_circles(im_name, base, C, R, L, conf, out_name=f'outh.jpg')
 
 
-alpha_list = [4.75, 5, 5.25, 5.5]
-for alpha in tqdm(alpha_list):
-    predict(im_name, out_name=f'out_{alpha}.jpg', alpha=alpha)
+main(im_name)
