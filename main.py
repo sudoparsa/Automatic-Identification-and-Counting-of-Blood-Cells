@@ -28,10 +28,10 @@ def open_image(im_name, alpha):
     img.save(temp)
 
     image = cv2.imread(temp, -1)
-    return image
+    return image, width, height
 
 def draw_circles(image, alpha, C, R, L, conf, out_name='outh.jpg'):
-    image = open_image(im_name, alpha)
+    image, width, height = open_image(im_name, alpha)
     for i in range(0, len(C)):
         center = C[i]
         radius = R[i]
@@ -57,7 +57,7 @@ def predict(im_name, alpha=5):
     L = []  # Label
     conf = []
 
-    image = open_image(im_name, alpha)
+    image, width, height = open_image(im_name, alpha)
     for h in range(0, height, 480):
         for w in range(0, width, 640):
             im = image[h:h + 480, w:w + 640]
