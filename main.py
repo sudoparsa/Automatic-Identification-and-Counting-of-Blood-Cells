@@ -97,8 +97,8 @@ def main(im_name, alpha_list = [4.75, 5, 5.25, 5.5]):
     for alpha in tqdm(alpha_list):
         C, R, L, conf = predict(im_name, alpha=alpha)
         z = base / alpha
-        C_list.append(np.round(np.array(C) * z))
-        R_list.append(np.round(np.array(R) * z))
+        C_list.append(np.round(np.array(C) * z).astype(int))
+        R_list.append(np.round(np.array(R) * z).astype(int))
         L_list.append(L)
         conf_list.append(conf)
     C, R, L, conf = merge(C_list, R_list, L_list, conf_list)
