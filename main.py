@@ -32,7 +32,7 @@ def open_image(im_name, alpha):
 
 def draw_circles(image, alpha, C, R, L, conf, out_name='outh.jpg'):
     image, width, height = open_image(im_name, alpha)
-    for i in range(0, len(C)):
+    for i in range(len(C)):
         center = C[i]
         radius = R[i]
         label = L[i]
@@ -97,8 +97,8 @@ def main(im_name, alpha_list = [4.75, 5, 5.25, 5.5]):
     for alpha in tqdm(alpha_list):
         C, R, L, conf = predict(im_name, alpha=alpha)
         z = base / alpha
-        C_list.append(np.array(C) * z)
-        R_list.append(np.array(R) * z)
+        C_list.append([round(c) for c in np.array(C) * z])
+        R_list.append([round(r) for r in np.array(R) * z])
         L_list.append(L)
         conf_list.append(conf)
     C, R, L, conf = merge(C_list, R_list, L_list, conf_list)
