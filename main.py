@@ -87,7 +87,7 @@ def predict(im_name, alpha=5):
     return C, R, L, conf
 
 def merge(C_list, R_list, L_list, conf_list):
-    C, R, L, conf = np.concatenate(C_list).flat, np.concatenate(R_list).flat, np.concatenate(L_list).flat, np.concatenate(conf_list).flat
+    C, R, L, conf = np.concatenate(C_list), np.concatenate(R_list), np.concatenate(L_list), np.concatenate(conf_list)
 
     return C, R, L, conf
 
